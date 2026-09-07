@@ -16,12 +16,6 @@ export type ShippingAddress = {
   phone: string;
 };
 
-export type CartLine = {
-  name: string;
-  quantity: number;
-  price: string;
-};
-
 export type ShippingOption = {
   name: string;
   price: string;

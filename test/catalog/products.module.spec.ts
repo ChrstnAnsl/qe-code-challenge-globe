@@ -4,19 +4,22 @@ test.describe("Catalog module", () => {
   test("shopper can browse the catalog and open a product detail page", async ({
     productsPage,
     productDetailPage,
+    cartPage,
   }) => {
     // Arrange
     await productsPage.goto();
 
     // Act
-    const names = await productsPage.listedNames();
     await productsPage.openFirstProduct();
     const product = await productDetailPage.readProduct();
+    await expect(productDetailPage.addToCartButton).toBeEnabled();
+    await productDetailPage.addToCart();
+    await productDetailPage.drawer.goToCart();
 
     // Assert
-    expect(names.length).toBeGreaterThan(0);
-    expect(product.name.length).toBeGreaterThan(0);
-    expect(product.price).toMatch(/\$\d/);
-    await expect(productDetailPage.addToCartButton).toBeEnabled();
+    await cartPage.expectLoaded();
+    await expect(cartPage.itemName).toHaveText(product.name);
+    await expect(cartPage.quantityInput).toHaveValue("1");
+    await expect(cartPage.itemPrice).toHaveText(product.price);
   });
 });

@@ -1,7 +1,6 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 import { ROUTES, ROUTE_PATTERNS } from "@ui/constants";
 import { BasePage } from "@ui/pages/base.page";
-import type { CartLine } from "@ui/types";
 
 export class CartPage extends BasePage {
   readonly path = ROUTES.cart;
@@ -24,17 +23,6 @@ export class CartPage extends BasePage {
     await expect(this.page).toHaveURL(ROUTE_PATTERNS.cart);
     await expect(this.heading).toBeVisible();
     await expect(this.checkoutButton).toBeVisible();
-  }
-
-  async readLine(): Promise<CartLine> {
-    await this.expectLoaded();
-    const quantityText = (await this.quantityInput.inputValue()) || "1";
-
-    return {
-      name: (await this.itemName.innerText()).trim(),
-      quantity: Number.parseInt(quantityText, 10) || 1,
-      price: (await this.itemPrice.innerText()).trim(),
-    };
   }
 
   async proceedToCheckout(): Promise<void> {

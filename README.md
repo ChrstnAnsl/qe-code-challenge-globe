@@ -12,8 +12,6 @@ Playwright UI automation for [demo.spreecommerce.org](https://demo.spreecommerce
 | User icon → Sign up from the account menu (log out if needed) | `HeaderComponent`, `AccountPage`, `RegisterPage` |
 | Log in with the new credentials | `AccountPage.signIn()` |
 | Browse products and open a PDP | `ProductsPage`, `ProductDetailPage` |
-| Add the product to cart | `ProductDetailPage.addToCart()` |
-| Verify cart name, quantity, and price | `CartPage.readLine()` |
 | Checkout: address, shipping, delivery prices, payment, complete | `CheckoutPage` |
 | Test card taken from the checkout page | `CheckoutPage.payWithDisplayedTestCard()` |
 | Order confirmation with order number and success message | `OrderConfirmationPage` |
@@ -27,7 +25,7 @@ src/ui/         Page Object Model (locators assigned in constructors)
 test/
   auth/         registration.module.spec.ts
   catalog/      products.module.spec.ts
-  shopping/     checkout.module.spec.ts + helper
+  shopping/     checkout.module.spec.ts
   fixtures/     page objects wired for specs
 ```
 

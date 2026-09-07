@@ -1,7 +1,6 @@
 import { TIMEOUTS } from "@ui/constants";
 import { expect, test } from "../fixtures/test-fixture";
 import { uniqueShopper, usShippingAddress } from "../utility/shopper";
-import { expectCartMatchesProduct } from "./checkout.module.spec.helpers";
 
 test.describe("Shopping module", () => {
   test("registered shopper can browse, cart, and complete checkout", async ({
@@ -37,7 +36,12 @@ test.describe("Shopping module", () => {
     const product = await productDetailPage.readProduct();
     await productDetailPage.addToCart();
     await productDetailPage.drawer.goToCart();
-    const cartLine = await cartPage.readLine();
+    await cartPage.expectLoaded();
+    
+    await expect(cartPage.itemName).toHaveText(product.name);
+    await expect(cartPage.quantityInput).toHaveValue("1");
+    await expect(cartPage.itemPrice).toHaveText(product.price);
+
     await cartPage.proceedToCheckout();
     await checkoutPage.expectLoaded();
     await checkoutPage.fillContactIfNeeded(shopper.email);
@@ -48,11 +52,10 @@ test.describe("Shopping module", () => {
     const order = await checkoutPage.readPlacedOrder();
 
     // Assert
-    expectCartMatchesProduct(cartLine, product);
     expect(shippingOptions.length).toBeGreaterThan(0);
     for (const option of shippingOptions) {
       expect(option.name.length).toBeGreaterThan(0);
-      expect(option.price).toMatch(/\$/);
+      expect(option.price, `shipping "${option.name}"`).toMatch(/\$\d+(?:\.\d{1,2})?/);
     }
     expect(order.number).toMatch(/[A-Z0-9-]+/i);
     expect(order.successMessage).toMatch(/thanks for your order/i);
