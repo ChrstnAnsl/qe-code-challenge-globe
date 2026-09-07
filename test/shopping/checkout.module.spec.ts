@@ -1,6 +1,10 @@
 import { TIMEOUTS } from "@ui/constants";
 import { expect, test } from "../fixtures/test-fixture";
-import { uniqueShopper, usShippingAddress } from "../utility/shopper";
+import {
+  selectedShipping,
+  uniqueShopper,
+  usShippingAddress,
+} from "../utility/shopper";
 
 test.describe("Shopping module", () => {
   test("registered shopper can browse, cart, and complete checkout", async ({
@@ -46,20 +50,20 @@ test.describe("Shopping module", () => {
     await checkoutPage.expectLoaded();
     await checkoutPage.fillContactIfNeeded(shopper.email);
     await checkoutPage.fillAddress(address);
-    const shippingOptions = await checkoutPage.readShippingOptions();
-    await checkoutPage.selectFirstShippingMethod();
+    await checkoutPage.shippingOption(selectedShipping.name, selectedShipping.price).check();
     await checkoutPage.payWithDisplayedTestCard();
     const order = await checkoutPage.readPlacedOrder();
 
     // Assert
-    expect(shippingOptions.length).toBeGreaterThan(0);
-    for (const option of shippingOptions) {
-      expect(option.name.length).toBeGreaterThan(0);
-      expect(option.price, `shipping "${option.name}"`).toMatch(/\$\d+(?:\.\d{1,2})?/);
-    }
     expect(order.number).toMatch(/[A-Z0-9-]+/i);
     expect(order.successMessage).toMatch(/thanks for your order/i);
     await expect(page).toHaveURL(/\/order-placed\//);
     await orderConfirmationPage.expectLoaded();
+    await expect(
+      orderConfirmationPage.shippingMethodSection.getByText(selectedShipping.name),
+    ).toBeVisible();
+    await expect(
+      orderConfirmationPage.shippingMethodSection.getByText(selectedShipping.price),
+    ).toBeVisible();
   });
 });

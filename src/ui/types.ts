@@ -16,11 +16,6 @@ export type ShippingAddress = {
   phone: string;
 };
 
-export type ShippingOption = {
-  name: string;
-  price: string;
-};
-
 export type PlacedOrder = {
   number: string;
   successMessage: string;

@@ -23,3 +23,10 @@ export function usShippingAddress(shopper: Shopper): ShippingAddress {
     phone: "5555550100",
   };
 }
+
+export const usShippingOptions = [
+  { name: "Standard", price: "$5.00" },
+  { name: "Express", price: "$10.00" },
+] as const;
+
+export const selectedShipping = usShippingOptions[0];

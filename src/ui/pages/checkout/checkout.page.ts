@@ -2,7 +2,7 @@ import { expect, type Locator, type Page } from "@playwright/test";
 import { StripePaymentComponent } from "@ui/components/stripe-payment/stripe-payment.component";
 import { ROUTE_PATTERNS, ROUTES, TIMEOUTS } from "@ui/constants";
 import { BasePage } from "@ui/pages/base.page";
-import type { PlacedOrder, ShippingAddress, ShippingOption } from "@ui/types";
+import type { PlacedOrder, ShippingAddress } from "@ui/types";
 
 export class CheckoutPage extends BasePage {
   readonly path = ROUTES.cart;
@@ -62,6 +62,12 @@ export class CheckoutPage extends BasePage {
     }).toPass({ timeout: TIMEOUTS.default });
   }
 
+  shippingOption(name: string, price: string): Locator {
+    return this.shippingHeading.locator("xpath=..").getByRole("radio", {
+      name: `${name} ${price}`,
+    });
+  }
+
   async fillAddress(address: ShippingAddress): Promise<void> {
     await this.countrySelect.selectOption({ label: address.country });
     await this.firstNameInput.fill(address.firstName);
@@ -72,41 +78,6 @@ export class CheckoutPage extends BasePage {
     await this.phoneInput.fill(address.phone);
     await this.stateSelect.selectOption({ label: address.state });
     await this.shippingHeading.click();
-  }
-
-  async readShippingOptions(): Promise<ShippingOption[]> {
-    await expect(this.shippingRadios.first()).toBeVisible({
-      timeout: TIMEOUTS.shippingRates,
-    });
-
-    const count = await this.shippingRadios.count();
-    const options: ShippingOption[] = [];
-
-    for (let index = 0; index < count; index += 1) {
-      const radio = this.shippingRadios.nth(index);
-      const label = (
-        await radio.evaluate(
-          (node) => node.closest("label")?.innerText ?? node.parentElement?.textContent ?? "",
-        )
-      )
-        .replace(/\s+/g, " ")
-        .trim();
-
-      options.push({
-        name: label.replace(/\$[\d,.]+/g, "").trim() || `Shipping option ${index + 1}`,
-        price: label.match(/\$[\d,.]+/)?.[0] ?? "$0.00",
-      });
-    }
-
-    if (options.length === 0) {
-      throw new Error("No shipping methods were offered at checkout");
-    }
-
-    return options;
-  }
-
-  async selectFirstShippingMethod(): Promise<void> {
-    await this.shippingRadios.first().check();
   }
 
   async payWithDisplayedTestCard(): Promise<void> {
