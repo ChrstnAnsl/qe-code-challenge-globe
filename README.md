@@ -50,3 +50,15 @@ npm test
 
 - **Quality** — lint and typecheck on every pull request
 - **Regression** — Playwright Chromium on pull request, `main`, nightly, and `workflow_dispatch`
+
+## Known limitations
+
+The suite runs against the public [Spree Commerce demo](https://demo.spreecommerce.org/). That store is a **shared sandbox**, not a dedicated test environment.
+
+It enforces a **500-order monthly cap**. When the cap is hit, add-to-cart shows:
+
+> Validation failed: This sandbox has reached its limit of 500 orders this month. The count resets on the 1st.
+
+![Sandbox monthly order limit on the product detail page](./Test%20Limitation%20Evidence.png)
+
+That is an environment limit, not a locator or product defect. Catalog and checkout specs fail while the cap is in effect. Registration still runs. The count resets on the 1st of each month.
