@@ -23,7 +23,7 @@ export class AccountPage extends BasePage {
     this.passwordInput = page.getByRole("textbox", { name: /password/i });
     this.signInButton = page.getByRole("button", { name: /^sign in$/i });
     this.signUpLink = page.getByRole("link", { name: /sign up/i });
-    this.accountOverview = page.getByText(/account overview/i);
+    this.accountOverview = page.getByRole("heading", { name: /account overview/i });
   }
 
   async signOutIfNeeded(): Promise<void> {

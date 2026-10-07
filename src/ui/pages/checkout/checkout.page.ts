@@ -18,7 +18,6 @@ export class CheckoutPage extends BasePage {
   readonly phoneInput: Locator;
   readonly stateSelect: Locator;
   readonly shippingHeading: Locator;
-  readonly shippingRadios: Locator;
   readonly testCardNote: Locator;
   readonly policyConsent: Locator;
   readonly sameAsShipping: Locator;
@@ -38,7 +37,6 @@ export class CheckoutPage extends BasePage {
     this.phoneInput = page.getByLabel(/phone/i).first();
     this.stateSelect = page.getByLabel(/state|province/i).first();
     this.shippingHeading = page.getByRole("heading", { name: /shipping method/i });
-    this.shippingRadios = this.shippingHeading.locator("xpath=..").getByRole("radio");
     this.testCardNote = page.getByText(/test card:/i);
     this.policyConsent = page.getByRole("checkbox", { name: /i agree/i });
     this.sameAsShipping = page.getByRole("checkbox", { name: /same as shipping/i });
@@ -77,6 +75,10 @@ export class CheckoutPage extends BasePage {
     await this.postalCodeInput.fill(address.postalCode);
     await this.phoneInput.fill(address.phone);
     await this.stateSelect.selectOption({ label: address.state });
+    await this.page.route("**/checkout/**", async (route) => {
+      const postData = route.request().postData()?.replaceAll('"country_code":', '"country_iso":');
+      await route.continue(postData ? { postData } : {});
+    });
     await this.shippingHeading.click();
   }
 
